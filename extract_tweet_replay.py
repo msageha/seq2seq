@@ -69,5 +69,5 @@ def read_tweet_json(file):
     return dialog
 
 if __name__ == '__main__':
-    file = '2017-11-23.txt'
+    file = '2017-11-20.txt'
     read_tweet_json(f'{file}')
