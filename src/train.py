@@ -14,7 +14,7 @@ def load_data():
     print('start load_data')
     data = []
     for file in os.listdir('../data'):
-        with open(f'../data/{file}') as f:
+        with open('../data/{0}'.format(file)) as f:
             for line in f:
                 input_text = line[7:].strip()
                 line = f.readline()
@@ -83,7 +83,7 @@ def training():
             ed = datetime.datetime.now()
             print("epoch:\t{}\ttotal loss:\t{}\ttime:\t{}".format(epoch+1, total_loss, ed-st))
             st = datetime.datetime.now()
-            serializers.save_npz(f"model/{model_file_name}_epoch-{epoch}.npz", model) # npz形式で書き出し
+            serializers.save_npz("model/{0}_epoch-{1}.npz".format(model_file_name, epoch), model) # npz形式で書き出し
 
 if __name__ == '__main__':
     training()
