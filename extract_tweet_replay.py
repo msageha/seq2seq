@@ -7,7 +7,8 @@ import requests
 import re
 
 def remove_account(text):
-    re.sub('@[a-zA-Z_+-0-9]')
+    text = re.sub(r'@[a-zA-Z_+.-0-9]+', '', text)
+    return text
 
 def getKeyDic(api_name, jsonPath = './api_key.json'):
     with open(jsonPath, 'r') as f:
@@ -36,7 +37,7 @@ def get_tweet(tweet_id):
     return text, flag
 
 def write_dialog(file_path, dialog):
-    with open(f'tweet_dialog/{file}', 'w') as f:
+    with open(f'dialog/{file}', 'w') as f:
         for i in dialog:
             f.write(f'input: {i[0]}\n')
             f.write(f'output: {i[1]}\n')
@@ -55,12 +56,16 @@ def read_tweet_json(file):
                 input_text = tweet['text'].replace('\n', ' ')
                 output_text, flag = get_tweet(tweet_id)
                 output_text = output_text.replace('\n', ' ')
+                input_text = remove_account(input_text)
+                output_text = remove_account(output_text)
                 if output_text != '':
                     dialog.append((input_text, output_text))
                 if flag:
                     print(i)
                     write_dialog(file, dialog)
                     dialog = []
+                    print('1min sleep')
+                    time.sleep(60)
     return dialog
 
 if __name__ == '__main__':
