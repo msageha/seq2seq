@@ -13,8 +13,8 @@ from model import DataConverter
 def load_data():
     print('start load_data')
     data = []
-    for file in os.listdir('../data'):
-        with open(f'../data/{file}') as f:
+    for file in os.listdir('../data/normal'):
+        with open(f'../data/normal/{file}') as f:
             for line in f:
                 input_text = line[7:].strip()
                 line = f.readline()
