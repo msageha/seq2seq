@@ -81,7 +81,7 @@ def training():
             loss.unchain_backward()
             total_loss += loss.data
             opt.update()
-            print(f'{i}/{N}:', end='')
+            print(f'{i}/{N}:', end='\t', flush=True)
         #output_path = "./att_seq2seq_network/{}_{}.network".format(epoch+1, total_loss)
         #serializers.save_npz(output_path, model)
         ed = datetime.datetime.now()
