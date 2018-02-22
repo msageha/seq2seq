@@ -68,13 +68,13 @@ class DataConverter:
             if sentence_type == "query": # クエリーの場合は前方にミニバッチ単語数サイズになるまで-1を補填する
                 while len(vectors) > self.batch_col_size: # ミニバッチ単語サイズよりも大きければ、ミニバッチ単語サイズになるまで先頭から削る
                     vectors.pop(0)
-                vectors = xp.array([np.zeros(200)]*(self.batch_col_size-len(vectors))+vectors, dtype="float32")
+                vectors = np.array([np.zeros(200)]*(self.batch_col_size-len(vectors))+vectors, dtype="float32")
             elif sentence_type == "response": # レスポンスの場合は後方にミニバッチ単語数サイズになるまで-1を補填する
                 while len(vectors) > self.batch_col_size: # ミニバッチ単語サイズよりも大きければ、ミニバッチ単語サイズになるまで末尾から削る
                     vectors.pop()
-                vectors = xp.array(vectors+[np.zeros(200)]*(self.batch_col_size-len(vectors)), dtype="float32")
+                vectors = np.array(vectors+[np.zeros(200)]*(self.batch_col_size-len(vectors)), dtype="float32")
         else: # 予測時は、そのままNumpy変換する
-            vectors = xp.array([vectors], dtype="float32")
+            vectors = np.array([vectors], dtype="float32")
         return vectors
 
     def vectors2sentences(self, vectors):

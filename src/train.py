@@ -26,7 +26,7 @@ def training():
     parser = argparse.ArgumentParser()
     parser.add_argument('--hidden_size', type=int, default=200)
     # parser.add_argument('--dropout', '-d', type=float, default=0.5)
-    parser.add_argument('--batch_size', '-b', type=int, default=50)
+    parser.add_argument('--batch_size', '-b', type=int, default=512)
     parser.add_argument('--batch_col_size', type=int, default=20)
     parser.add_argument('--epoch', '-e', type=int, default=50)
     parser.add_argument('--gpu', '-g', type=int, default=-1)
