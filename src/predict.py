@@ -1,10 +1,6 @@
-import datetime
-import numpy as np
-from chainer import Chain, Variable, cuda, optimizer, optimizers, serializers
-import chainer.functions as F
-import chainer.links as L
-import MeCab
+from chainer import serializers
 import argparse
+import json
 
 from model import AttSeq2Seq
 from model import DataConverter
