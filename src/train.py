@@ -26,7 +26,7 @@ def training():
     parser = argparse.ArgumentParser()
     parser.add_argument('--hidden_size', type=int, default=200)
     # parser.add_argument('--dropout', '-d', type=float, default=0.5)
-    parser.add_argument('--batch_size', '-b', type=int, default=50)
+    parser.add_argument('--batch_size', '-b', type=int, default=100)
     parser.add_argument('--batch_col_size', type=int, default=20)
     parser.add_argument('--epoch', '-e', type=int, default=50)
     parser.add_argument('--gpu', '-g', type=int, default=-1)
@@ -81,11 +81,11 @@ def training():
             loss.unchain_backward()
             total_loss += loss.data
             opt.update()
-            print(f'finish batch:{i}/{N}')
+            print(f'{i}/{N}:', end='')
         #output_path = "./att_seq2seq_network/{}_{}.network".format(epoch+1, total_loss)
         #serializers.save_npz(output_path, model)
         ed = datetime.datetime.now()
-        print("epoch:\t{}\ttotal loss:\t{}\ttime:\t{}".format(epoch+1, total_loss, ed-st))
+        print("\nepoch:\t{}\ttotal loss:\t{}\ttime:\t{}".format(epoch+1, total_loss, ed-st))
         st = datetime.datetime.now()
         model.to_cpu()
         serializers.save_npz(f"model/{model_file_name}_epoch-{epoch+1}.npz", model) # npz形式で書き出し
