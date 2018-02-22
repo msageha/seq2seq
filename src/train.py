@@ -3,7 +3,7 @@ import numpy as np
 from chainer import Chain, Variable, cuda, optimizer, optimizers, serializers
 import chainer.functions as F
 import chainer.links as L
-import argparse 
+import argparse
 import json
 import os
 
@@ -14,7 +14,7 @@ def load_data():
     print('start load_data')
     data = []
     for file in os.listdir('../data'):
-        with open('../data/{0}'.format(file)) as f:
+        with open(f'../data/{file}') as f:
             for line in f:
                 input_text = line[7:].strip()
                 line = f.readline()
@@ -26,11 +26,12 @@ def training():
     parser = argparse.ArgumentParser()
     parser.add_argument('--hidden_size', type=int, default=200)
     # parser.add_argument('--dropout', '-d', type=float, default=0.5)
-    parser.add_argument('--batch_size', '-b', type=int, default=6)
+    parser.add_argument('--batch_size', '-b', type=int, default=50)
     parser.add_argument('--batch_col_size', type=int, default=20)
     parser.add_argument('--epoch', '-e', type=int, default=50)
     parser.add_argument('--gpu', '-g', type=int, default=-1)
     parser.add_argument('--out', '-o', default='result', help='Directory to output the result')
+    parser.add_argument('--model', '-m', default='', type=str)
     args = parser.parse_args()
 
     print(json.dumps(args.__dict__, indent=2))
@@ -44,7 +45,7 @@ def training():
     # 教師データ
     data = load_data()
     N = len(data) # 教師データの数
-    
+
     # 教師データの読み込み
     print('initialize DataConverter')
     data_converter = DataConverter(batch_col_size=args.batch_col_size) # データコンバーター
@@ -52,12 +53,15 @@ def training():
 
     model = AttSeq2Seq(input_size=200, hidden_size=args.hidden_size, batch_col_size=args.batch_col_size)
 
+    if args.gpu >= 0:
+        model.to_gpu(0)
+    if args.model != '':
+        serializers.load_npz(args.model, model)
+
     opt = optimizers.Adam()
     opt.setup(model)
     opt.add_hook(optimizer.GradientClipping(5))
 
-    if args.gpu >= 0:
-        model.to_gpu(0)
     model.reset()
 
     # 学習開始
@@ -77,13 +81,15 @@ def training():
             loss.unchain_backward()
             total_loss += loss.data
             opt.update()
+            print(f'finish batch:{i}/{N}')
         #output_path = "./att_seq2seq_network/{}_{}.network".format(epoch+1, total_loss)
         #serializers.save_npz(output_path, model)
-        if (epoch+1)%10 == 0:
-            ed = datetime.datetime.now()
-            print("epoch:\t{}\ttotal loss:\t{}\ttime:\t{}".format(epoch+1, total_loss, ed-st))
-            st = datetime.datetime.now()
-            serializers.save_npz("model/{0}_epoch-{1}.npz".format(model_file_name, epoch), model) # npz形式で書き出し
+        ed = datetime.datetime.now()
+        print("epoch:\t{}\ttotal loss:\t{}\ttime:\t{}".format(epoch+1, total_loss, ed-st))
+        st = datetime.datetime.now()
+        model.to_cpu()
+        serializers.save_npz(f"model/{model_file_name}_epoch-{epoch+1}.npz", model) # npz形式で書き出し
+        model.to_gpu()
 
 if __name__ == '__main__':
     training()

@@ -16,7 +16,7 @@ def getUserTweet(auth, name, folder):
     # timelines = api.statuses.user_timeline(screen_name=name, count=count)
     # for timeline in timelines:
     #   f.write(timeline['text']+'\n')
-    max_id = 963619750776422400 #指定しないとだめなよう
+    max_id = 993619750776422400 #指定しないとだめなよう
     while True:
       timelines = api.statuses.user_timeline(screen_name=name, count=count, max_id=max_id)
       if timelines == []:
@@ -37,7 +37,7 @@ def searchUserTweet(auth, name, folder):
     # timelines = api.statuses.user_timeline(screen_name=name, count=count)
     # for timeline in timelines:
     #   f.write(timeline['text']+'\n')
-    max_id = 718085631121821700 #指定しないとだめなよう
+    max_id = 963949352271007745 #指定しないとだめなよう
     while True:
       timelines = api.search.tweets(q=name, count=count, max_id=max_id)
       if timelines == []:

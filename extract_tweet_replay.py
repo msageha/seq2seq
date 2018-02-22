@@ -51,6 +51,8 @@ def read_tweet_json(file):
             if i%1000 == 0:
                 print(i)
             tweet = json.loads(line)
+            if tweet['user']['name'] != 'りんな':
+                continue
             if tweet["in_reply_to_status_id"]:
                 tweet_id = tweet["in_reply_to_status_id"]
                 input_text = tweet['text'].replace('\n', ' ')

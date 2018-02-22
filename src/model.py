@@ -31,8 +31,8 @@ class DataConverter:
             query, response = d[0], d[1] #  エンコード文、デコード文
             queries.append(self.sentence2vectors(sentence=query, train=True, sentence_type="query"))
             responses.append(self.sentence2vectors(sentence=response, train=True, sentence_type="response"))
-        self.train_queries = xp.array(queries)
-        self.train_responses = xp.array(responses)
+        self.train_queries = np.array(queries)
+        self.train_responses = np.array(responses)
 
     def sentence2words(self, sentence):
         # 文章を単語の配列にして返却する
@@ -83,7 +83,7 @@ class DataConverter:
         # :return: 単語の配列
         words = [] # 単語を格納する配列
         for vector in vectors: # 順番に単語IDを単語辞書から参照して単語に変換する
-            word = self.model.similar_by_vector(vector[0], topn=1)[0]
+            word = self.model.similar_by_vector(cuda.to_cpu(vector), topn=1)[0][0]
             if word == 'EOS':
                 break
             words.append(word)
