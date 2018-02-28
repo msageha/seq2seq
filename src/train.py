@@ -51,7 +51,7 @@ def training():
     data_converter = DataConverter(batch_col_size=args.batch_col_size) # データコンバーター
     data_converter.load(data) # 教師データ読み込み
 
-    model = AttSeq2Seq(input_size=200, hidden_size=args.hidden_size, batch_col_size=args.batch_col_size, dropout=args.dropout)
+    model = AttSeq2Seq(input_size=200, hidden_size=args.hidden_size, batch_col_size=args.batch_col_size, dropout=args.dropout, device=args.gpu)
 
     if args.gpu >= 0:
         model.to_gpu(0)

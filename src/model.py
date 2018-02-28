@@ -6,13 +6,6 @@ import MeCab
 import gensim
 
 w2v_path = '..'
-# データ変換クラスの定義
-device = -1
-
-if device > -1: # numpyかcuda.cupyか
-    xp = cuda.cupy
-else:
-    xp = np
 
 class DataConverter:
     def __init__(self, batch_col_size):
@@ -145,7 +138,7 @@ class AttLSTMDecoder(Chain):
 
 # Attentionモデルクラス
 class Attention(Chain):
-    def __init__(self, hidden_size):
+    def __init__(self, hidden_size, device):
         # Attentionのインスタンス化
         # :param hidden_size: 隠れ層のサイズ
         super(Attention, self).__init__(
@@ -156,7 +149,13 @@ class Attention(Chain):
         )
         self.hidden_size = hidden_size # 隠れ層のサイズを記憶
 
+        if device > -1: # numpyかcuda.cupyか
+            self.xp = cuda.cupy
+        else:
+            self.xp = np
+
     def __call__(self, fs, bs, h):
+        xp = self.xp
         # Attentionの計算
         # :param fs: 順向きのEncoderの中間ベクトルが記録されたリスト
         # :param bs: 逆向きのEncoderの中間ベクトルが記録されたリスト
@@ -183,7 +182,7 @@ class Attention(Chain):
 
 # Attention Sequence to Sequence Modelクラス
 class AttSeq2Seq(Chain):
-    def __init__(self, input_size, hidden_size, batch_col_size, dropout):
+    def __init__(self, input_size, hidden_size, batch_col_size, dropout, device):
         # Attention + Seq2Seqのインスタンス化
         # :param vocab_size: 語彙数のサイズ
         # :param embed_size: 単語ベクトルのサイズ
@@ -191,7 +190,7 @@ class AttSeq2Seq(Chain):
         super(AttSeq2Seq, self).__init__(
             f_encoder = LSTMEncoder(input_size, hidden_size), # 順向きのEncoder
             b_encoder = LSTMEncoder(input_size, hidden_size), # 逆向きのEncoder
-            attention = Attention(hidden_size), # Attention Model
+            attention = Attention(hidden_size, device), # Attention Model
             decoder = AttLSTMDecoder(input_size, hidden_size) # Decoder
         )
         self.input_size = input_size
@@ -201,6 +200,12 @@ class AttSeq2Seq(Chain):
         # 順向きのEncoderの中間ベクトル、逆向きのEncoderの中間ベクトルを保存するためのリストを初期化
         self.fs = []
         self.bs = []
+
+        if device > -1: # numpyかcuda.cupyか
+            xp = cuda.cupy
+        else:
+            xp = np
+        self.xp = xp
         self.eos = xp.array([-3.449870e-01, -1.078110e-01,  2.550220e-01,  5.534310e-01,  -6.482100e-02,  7.935230e-01,  1.092545e+00,  1.060641e+00, 1.124500e-01, -6.563910e-01,  2.411870e-01, -3.978010e-01,
         8.743650e-01,  7.087400e-02,  3.342990e-01, -1.047685e+00, 6.116810e-01,  6.957860e-01,  8.381170e-01, -6.578200e-02, 4.172900e-01,  1.671147e+00, -4.299310e-01, -7.260790e-01, -1.051731e+00,  2.862650e-01, -2.223440e-01,  2.334280e-01,
        -4.886680e-01, -1.749300e-02, -2.235280e-01,  4.922340e-01, -6.045120e-01, -1.279066e+00,  6.746790e-01,  7.234180e-01, 4.587410e-01,  8.586320e-01,  8.506620e-01, -1.067123e+00,
@@ -225,6 +230,7 @@ class AttSeq2Seq(Chain):
         # :param batch_size: ミニバッチのサイズ
         # :return:
         # 内部メモリ、中間ベクトルの初期化
+        xp = self.xp
         c = Variable(xp.zeros((batch_size, self.hidden_size), dtype='float32'))
         h = Variable(xp.zeros((batch_size, self.hidden_size), dtype='float32'))
         # 順向きのEncoderの計算
@@ -267,6 +273,7 @@ class AttSeq2Seq(Chain):
         # :param train: 学習か予測か
         # :return: 計算した損失の合計 or 予測したデコード文字列
         enc_words = enc_words.transpose(1,0,2)[::-1] #逆にする！
+        xp = self.xp
         if train:
             dec_words = dec_words.transpose(1,0,2)
         batch_size = len(enc_words[0]) # バッチサイズを記録
