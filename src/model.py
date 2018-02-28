@@ -7,7 +7,7 @@ import gensim
 
 w2v_path = '..'
 # データ変換クラスの定義
-device = 0
+device = -1
 
 if device > -1: # numpyかcuda.cupyか
     xp = cuda.cupy
@@ -183,7 +183,7 @@ class Attention(Chain):
 
 # Attention Sequence to Sequence Modelクラス
 class AttSeq2Seq(Chain):
-    def __init__(self, input_size, hidden_size, batch_col_size):
+    def __init__(self, input_size, hidden_size, batch_col_size, dropout):
         # Attention + Seq2Seqのインスタンス化
         # :param vocab_size: 語彙数のサイズ
         # :param embed_size: 単語ベクトルのサイズ
@@ -197,6 +197,7 @@ class AttSeq2Seq(Chain):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.decode_max_size = batch_col_size # デコードはEOSが出力されれば終了する、出力されない場合の最大出力語彙数
+        self.dropout = dropout
         # 順向きのEncoderの中間ベクトル、逆向きのEncoderの中間ベクトルを保存するためのリストを初期化
         self.fs = []
         self.bs = []
@@ -229,6 +230,7 @@ class AttSeq2Seq(Chain):
         # 順向きのEncoderの計算
         for w in words:
             c, h = self.f_encoder(w, c, h)
+            h = F.dropout(h, ratio=self.dropout)
             self.fs.append(h) # 計算された中間ベクトルを記録
         # 内部メモリ、中間ベクトルの初期化
         c = Variable(xp.zeros((batch_size, self.hidden_size), dtype='float32'))
@@ -236,6 +238,7 @@ class AttSeq2Seq(Chain):
         # 逆向きのEncoderの計算
         for w in reversed(words):
             c, h = self.b_encoder(w, c, h)
+            h = F.dropout(h, ratio=self.dropout)
             self.bs.insert(0, h) # 計算された中間ベクトルを記録
         # 内部メモリ、中間ベクトルの初期化
         self.c = Variable(xp.zeros((batch_size, self.hidden_size), dtype='float32'))

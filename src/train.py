@@ -13,8 +13,8 @@ from model import DataConverter
 def load_data():
     print('start load_data')
     data = []
-    for file in os.listdir('../data/normal'):
-        with open(f'../data/normal/{file}') as f:
+    for file in os.listdir('../data/under20'):
+        with open(f'../data/under20/{file}') as f:
             for line in f:
                 input_text = line[7:].strip()
                 line = f.readline()
@@ -25,8 +25,8 @@ def load_data():
 def training():
     parser = argparse.ArgumentParser()
     parser.add_argument('--hidden_size', type=int, default=200)
-    # parser.add_argument('--dropout', '-d', type=float, default=0.5)
-    parser.add_argument('--batch_size', '-b', type=int, default=512)
+    parser.add_argument('--dropout', '-d', type=float, default=0.2)
+    parser.add_argument('--batch_size', '-b', type=int, default=15)
     parser.add_argument('--batch_col_size', type=int, default=20)
     parser.add_argument('--epoch', '-e', type=int, default=50)
     parser.add_argument('--gpu', '-g', type=int, default=-1)
@@ -51,7 +51,7 @@ def training():
     data_converter = DataConverter(batch_col_size=args.batch_col_size) # データコンバーター
     data_converter.load(data) # 教師データ読み込み
 
-    model = AttSeq2Seq(input_size=200, hidden_size=args.hidden_size, batch_col_size=args.batch_col_size)
+    model = AttSeq2Seq(input_size=200, hidden_size=args.hidden_size, batch_col_size=args.batch_col_size, dropout=args.dropout)
 
     if args.gpu >= 0:
         model.to_gpu(0)
