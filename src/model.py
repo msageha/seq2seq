@@ -154,10 +154,10 @@ class Attention(Chain):
             xp = cupy
         else:
             xp = np
-        self.xp = xp
+        self.ARR = xp
 
     def __call__(self, fs, bs, h):
-        xp = self.xp
+        xp = self.ARR
         # Attentionの計算
         # :param fs: 順向きのEncoderの中間ベクトルが記録されたリスト
         # :param bs: 逆向きのEncoderの中間ベクトルが記録されたリスト
@@ -207,7 +207,7 @@ class AttSeq2Seq(Chain):
             xp = cupy
         else:
             xp = np
-        self.xp = xp
+        self.ARR = xp
         self.eos = xp.array([-3.449870e-01, -1.078110e-01,  2.550220e-01,  5.534310e-01,  -6.482100e-02,  7.935230e-01,  1.092545e+00,  1.060641e+00, 1.124500e-01, -6.563910e-01,  2.411870e-01, -3.978010e-01,
         8.743650e-01,  7.087400e-02,  3.342990e-01, -1.047685e+00, 6.116810e-01,  6.957860e-01,  8.381170e-01, -6.578200e-02, 4.172900e-01,  1.671147e+00, -4.299310e-01, -7.260790e-01, -1.051731e+00,  2.862650e-01, -2.223440e-01,  2.334280e-01,
        -4.886680e-01, -1.749300e-02, -2.235280e-01,  4.922340e-01, -6.045120e-01, -1.279066e+00,  6.746790e-01,  7.234180e-01, 4.587410e-01,  8.586320e-01,  8.506620e-01, -1.067123e+00,
@@ -232,7 +232,7 @@ class AttSeq2Seq(Chain):
         # :param batch_size: ミニバッチのサイズ
         # :return:
         # 内部メモリ、中間ベクトルの初期化
-        xp = self.xp
+        xp = self.ARR
         c = Variable(xp.zeros((batch_size, self.hidden_size), dtype='float32'))
         h = Variable(xp.zeros((batch_size, self.hidden_size), dtype='float32'))
         # 順向きのEncoderの計算
