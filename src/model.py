@@ -3,7 +3,7 @@ from chainer import Chain, Variable, cuda, optimizer, optimizers, serializers
 import chainer.functions as F
 import chainer.links as L
 import MeCab
-import pickle
+import gensim
 
 w2v_path = '..'
 # データ変換クラスの定義
@@ -20,8 +20,7 @@ class DataConverter:
         # :param batch_col_size: 学習時のミニバッチ単語数サイズ
         self.mecab = MeCab.Tagger() # 形態素解析器
         self.batch_col_size = batch_col_size
-        with open('{0}/word2vec.pickle'.format(w2v_path)) as f:
-            self.model = pickle.load(f)
+        self.model = gensim.models.KeyedVectors.load_word2vec_format('{0}/entity_vector.model.txt'.format(w2v_path))
 
     def load(self, data):
         # 学習時に、教師データを読み込んでミニバッチサイズに対応したNumpy配列に変換する
