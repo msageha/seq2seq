@@ -88,7 +88,7 @@ def training():
         print("\nepoch:\t{0}\ttotal loss:\t{1}\ttime:\t{2}".format(epoch+1, total_loss, ed-st))
         st = datetime.datetime.now()
         model.to_cpu()
-        serializers.save_npz(f"model/{0}_epoch-{1}.npz".format(model_file_name, epoch+1), model) # npz形式で書き出し
+        serializers.save_npz("model/{0}_epoch-{1}.npz".format(model_file_name, epoch+1), model) # npz形式で書き出し
         model.to_gpu()
 
 if __name__ == '__main__':
