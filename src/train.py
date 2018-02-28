@@ -14,7 +14,7 @@ def load_data():
     print('start load_data')
     data = []
     for file in os.listdir('../data/under20'):
-        with open(f'../data/under20/{file}') as f:
+        with open('../data/under20/{}'.format(file)) as f:
             for line in f:
                 input_text = line[7:].strip()
                 line = f.readline()
@@ -81,14 +81,14 @@ def training():
             loss.unchain_backward()
             total_loss += loss.data
             opt.update()
-            print(f'{i}/{N}:', end='\t', flush=True)
+            print('{0}/{1}:'.format(i, N), end='\t', flush=True)
         #output_path = "./att_seq2seq_network/{}_{}.network".format(epoch+1, total_loss)
         #serializers.save_npz(output_path, model)
         ed = datetime.datetime.now()
-        print("\nepoch:\t{}\ttotal loss:\t{}\ttime:\t{}".format(epoch+1, total_loss, ed-st))
+        print("\nepoch:\t{0}\ttotal loss:\t{1}\ttime:\t{2}".format(epoch+1, total_loss, ed-st))
         st = datetime.datetime.now()
         model.to_cpu()
-        serializers.save_npz(f"model/{model_file_name}_epoch-{epoch+1}.npz", model) # npz形式で書き出し
+        serializers.save_npz(f"model/{0}_epoch-{1}.npz".format(model_file_name, epoch+1), model) # npz形式で書き出し
         model.to_gpu()
 
 if __name__ == '__main__':
