@@ -4,6 +4,7 @@ import chainer.functions as F
 import chainer.links as L
 import MeCab
 import gensim
+import cupy
 
 w2v_path = '..'
 
@@ -150,9 +151,10 @@ class Attention(Chain):
         self.hidden_size = hidden_size # 隠れ層のサイズを記憶
 
         if device > -1: # numpyかcuda.cupyか
-            self.xp = cuda.cupy
+            xp = cupy
         else:
-            self.xp = np
+            xp = np
+        self.xp = xp
 
     def __call__(self, fs, bs, h):
         xp = self.xp
@@ -202,7 +204,7 @@ class AttSeq2Seq(Chain):
         self.bs = []
 
         if device > -1: # numpyかcuda.cupyか
-            xp = cuda.cupy
+            xp = cupy
         else:
             xp = np
         self.xp = xp
